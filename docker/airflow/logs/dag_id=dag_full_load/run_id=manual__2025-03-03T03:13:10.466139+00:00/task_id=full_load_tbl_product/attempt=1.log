@@ -1,0 +1,17 @@
+[2025-03-03T03:19:32.582+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_full_load.full_load_tbl_product manual__2025-03-03T03:13:10.466139+00:00 [queued]>
+[2025-03-03T03:19:32.603+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_full_load.full_load_tbl_product manual__2025-03-03T03:13:10.466139+00:00 [queued]>
+[2025-03-03T03:19:32.604+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T03:19:32.703+0000] {taskinstance.py:1327} INFO - Executing <Task(PythonOperator): full_load_tbl_product> on 2025-03-03 03:13:10.466139+00:00
+[2025-03-03T03:19:32.786+0000] {standard_task_runner.py:57} INFO - Started process 1262 to run task
+[2025-03-03T03:19:32.791+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_full_load', 'full_load_tbl_product', 'manual__2025-03-03T03:13:10.466139+00:00', '--job-id', '19', '--raw', '--subdir', 'DAGS_FOLDER/dag_full_load.py', '--cfg-path', '/tmp/tmpxc9ss747']
+[2025-03-03T03:19:32.799+0000] {standard_task_runner.py:85} INFO - Job 19: Subtask full_load_tbl_product
+[2025-03-03T03:19:33.003+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T03:19:33.144+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_full_load.full_load_tbl_product manual__2025-03-03T03:13:10.466139+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T03:19:34.881+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_full_load' AIRFLOW_CTX_TASK_ID='full_load_tbl_product' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T03:13:10.466139+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T03:13:10.466139+00:00'
+[2025-03-03T03:19:34.891+0000] {logging_mixin.py:149} INFO - Processing Loading Configuration.....
+[2025-03-03T03:19:34.895+0000] {logging_mixin.py:149} INFO - Configuration Finished Load
+[2025-03-03T03:19:34.896+0000] {logging_mixin.py:149} INFO - usernamenya pakai apa nih: postgres
+[2025-03-03T03:19:35.179+0000] {python.py:183} INFO - Done. Returned value was: None
+[2025-03-03T03:19:35.216+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_full_load, task_id=full_load_tbl_product, execution_date=20250303T031310, start_date=20250303T031932, end_date=20250303T031935
+[2025-03-03T03:19:35.496+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T03:19:35.738+0000] {taskinstance.py:2651} INFO - 1 downstream tasks scheduled from follow-on schedule check

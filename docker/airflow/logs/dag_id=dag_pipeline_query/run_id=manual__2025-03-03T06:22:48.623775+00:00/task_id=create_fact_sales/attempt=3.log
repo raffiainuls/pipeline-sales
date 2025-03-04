@@ -1,0 +1,118 @@
+[2025-03-03T06:31:24.121+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_sales manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:31:24.183+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_sales manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:31:24.192+0000] {taskinstance.py:1308} INFO - Starting attempt 3 of 4
+[2025-03-03T06:31:25.336+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_fact_sales> on 2025-03-03 06:22:48.623775+00:00
+[2025-03-03T06:31:25.404+0000] {standard_task_runner.py:57} INFO - Started process 22749 to run task
+[2025-03-03T06:31:25.410+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_fact_sales', 'manual__2025-03-03T06:22:48.623775+00:00', '--job-id', '81', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmpmc1jv_p8']
+[2025-03-03T06:31:25.414+0000] {standard_task_runner.py:85} INFO - Job 81: Subtask create_fact_sales
+[2025-03-03T06:31:26.155+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:31:26.712+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_fact_sales manual__2025-03-03T06:22:48.623775+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:31:27.748+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_fact_sales' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T06:22:48.623775+00:00' AIRFLOW_CTX_TRY_NUMBER='3' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T06:22:48.623775+00:00'
+[2025-03-03T06:31:27.750+0000] {sql.py:262} INFO - Executing: 
+            CREATE TABLE IF NOT EXISTS fact_sales AS
+            SELECT * FROM (SELECT 
+    ts.*,
+    tp.product_name,
+    tp.category AS product_category,
+    tp.sub_category AS sub_category_product,
+    tp.price,
+    tps.disc,
+    tps.event_name AS disc_name,
+    CAST(
+        CASE 
+            WHEN tps.disc IS NOT NULL 
+            THEN (tp.price * ts.quantity) - (tp.price * ts.quantity) * COALESCE(tps.disc, 0) / 100
+            ELSE tp.price * ts.quantity
+        END AS BIGINT
+    ) AS amount
+FROM tbl_sales ts 
+LEFT JOIN tbl_product tp ON tp.id = ts.product_id 
+LEFT JOIN tbl_promotions tps ON tps.time = DATE(ts.order_date)
+WHERE ts.order_status = 2 
+    AND ts.payment_status = 2 
+    AND (ts.shipping_status = 2 OR ts.shipping_status IS NULL)
+) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE fact_sales;
+
+            INSERT INTO fact_sales
+            SELECT 
+    ts.*,
+    tp.product_name,
+    tp.category AS product_category,
+    tp.sub_category AS sub_category_product,
+    tp.price,
+    tps.disc,
+    tps.event_name AS disc_name,
+    CAST(
+        CASE 
+            WHEN tps.disc IS NOT NULL 
+            THEN (tp.price * ts.quantity) - (tp.price * ts.quantity) * COALESCE(tps.disc, 0) / 100
+            ELSE tp.price * ts.quantity
+        END AS BIGINT
+    ) AS amount
+FROM tbl_sales ts 
+LEFT JOIN tbl_product tp ON tp.id = ts.product_id 
+LEFT JOIN tbl_promotions tps ON tps.time = DATE(ts.order_date)
+WHERE ts.order_status = 2 
+    AND ts.payment_status = 2 
+    AND (ts.shipping_status = 2 OR ts.shipping_status IS NULL)
+;
+        
+[2025-03-03T06:31:27.835+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:31:28.097+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:31:28.138+0000] {sql.py:375} INFO - Running statement: 
+            CREATE TABLE IF NOT EXISTS fact_sales AS
+            SELECT * FROM (SELECT 
+    ts.*,
+    tp.product_name,
+    tp.category AS product_category,
+    tp.sub_category AS sub_category_product,
+    tp.price,
+    tps.disc,
+    tps.event_name AS disc_name,
+    CAST(
+        CASE 
+            WHEN tps.disc IS NOT NULL 
+            THEN (tp.price * ts.quantity) - (tp.price * ts.quantity) * COALESCE(tps.disc, 0) / 100
+            ELSE tp.price * ts.quantity
+        END AS BIGINT
+    ) AS amount
+FROM tbl_sales ts 
+LEFT JOIN tbl_product tp ON tp.id = ts.product_id 
+LEFT JOIN tbl_promotions tps ON tps.time = DATE(ts.order_date)
+WHERE ts.order_status = 2 
+    AND ts.payment_status = 2 
+    AND (ts.shipping_status = 2 OR ts.shipping_status IS NULL)
+) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE fact_sales;
+
+            INSERT INTO fact_sales
+            SELECT 
+    ts.*,
+    tp.product_name,
+    tp.category AS product_category,
+    tp.sub_category AS sub_category_product,
+    tp.price,
+    tps.disc,
+    tps.event_name AS disc_name,
+    CAST(
+        CASE 
+            WHEN tps.disc IS NOT NULL 
+            THEN (tp.price * ts.quantity) - (tp.price * ts.quantity) * COALESCE(tps.disc, 0) / 100
+            ELSE tp.price * ts.quantity
+        END AS BIGINT
+    ) AS amount
+FROM tbl_sales ts 
+LEFT JOIN tbl_product tp ON tp.id = ts.product_id 
+LEFT JOIN tbl_promotions tps ON tps.time = DATE(ts.order_date)
+WHERE ts.order_status = 2 
+    AND ts.payment_status = 2 
+    AND (ts.shipping_status = 2 OR ts.shipping_status IS NULL)
+;
+        , parameters: None
+[2025-03-03T06:31:28.613+0000] {sql.py:384} INFO - Rows affected: 8168
+[2025-03-03T06:31:29.185+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_fact_sales, execution_date=20250303T062248, start_date=20250303T063124, end_date=20250303T063129
+[2025-03-03T06:31:29.641+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T06:31:30.045+0000] {taskinstance.py:2651} INFO - 0 downstream tasks scheduled from follow-on schedule check

@@ -1,0 +1,194 @@
+[2025-03-03T06:06:51.547+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_branch_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T06:06:51.570+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_branch_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T06:06:51.572+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T06:06:51.696+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_dim_branch_finance_performance> on 2025-03-03 05:39:13.029042+00:00
+[2025-03-03T06:06:51.710+0000] {standard_task_runner.py:57} INFO - Started process 19641 to run task
+[2025-03-03T06:06:51.714+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_dim_branch_finance_performance', 'manual__2025-03-03T05:39:13.029042+00:00', '--job-id', '64', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmpxrausiil']
+[2025-03-03T06:06:51.717+0000] {standard_task_runner.py:85} INFO - Job 64: Subtask create_dim_branch_finance_performance
+[2025-03-03T06:06:53.008+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:06:53.140+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_dim_branch_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:06:53.856+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_dim_branch_finance_performance' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T05:39:13.029042+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T05:39:13.029042+00:00'
+[2025-03-03T06:06:53.857+0000] {sql.py:262} INFO - Executing: -- dim_branch_finance_performance
+create table if not exists dim_branch_finance_performance  as
+-- unit_sold  
+with uss as (
+select 
+tb.name,
+sum(quantity) unit_sold
+from fact_sales fs2 
+left join tbl_branch tb 
+on tb.id = fs2.branch_id
+group by 1
+),
+-- gmv 
+gmv as (
+select 
+tb.name,
+sum(quantity * price) amount
+from fact_sales fs2 
+left join tbl_branch tb
+on tb.id = fs2.branch_id
+group by 1
+),
+-- total outcome
+outcome as (
+select 
+tb.name,
+sum(amount) amount
+from sum_transactions st 
+left join tbl_branch tb 
+on tb.id = st.branch_id
+where type = 'outcome'
+group by 1
+),
+-- revenue 
+revenue as (
+select
+tb.name,
+sum(amount) amount
+from sum_transactions st 
+left join tbl_branch tb 
+on tb.id = st.branch_id
+where type = 'income' and sales_id is not null 
+group by 1
+),
+-- gross profit
+gross_profit as (
+select 
+tb.name, 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+left join tbl_branch tb 
+on tb.id = fs2.branch_id 
+group by 1
+),
+-- net_profit
+net_profit as (
+select 
+u.name,
+(gp.amount - o.amount) as amount
+from uss u
+left join outcome o
+on o.name = u.name
+left join gmv g 
+on g.name = u.name 
+left join revenue r 
+on r.name = u.name 
+left join gross_profit gp 
+on gp.name = u.name
+)
+SELECT 
+u.name, 
+o.amount as outcome, 
+g.amount as gmv, 
+r.amount as revenue, 
+gp.amount as gross_profit, 
+np.amount as net_profit
+from uss u
+left join outcome o
+on o.name = u.name
+left join gmv g 
+on g.name = u.name 
+left join revenue r 
+on r.name = u.name 
+left join gross_profit gp 
+on gp.name = u.name
+left join net_profit np 
+on np.name = u.name
+[2025-03-03T06:06:53.904+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:06:54.072+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:06:54.106+0000] {sql.py:375} INFO - Running statement: -- dim_branch_finance_performance
+create table if not exists dim_branch_finance_performance  as
+-- unit_sold  
+with uss as (
+select 
+tb.name,
+sum(quantity) unit_sold
+from fact_sales fs2 
+left join tbl_branch tb 
+on tb.id = fs2.branch_id
+group by 1
+),
+-- gmv 
+gmv as (
+select 
+tb.name,
+sum(quantity * price) amount
+from fact_sales fs2 
+left join tbl_branch tb
+on tb.id = fs2.branch_id
+group by 1
+),
+-- total outcome
+outcome as (
+select 
+tb.name,
+sum(amount) amount
+from sum_transactions st 
+left join tbl_branch tb 
+on tb.id = st.branch_id
+where type = 'outcome'
+group by 1
+),
+-- revenue 
+revenue as (
+select
+tb.name,
+sum(amount) amount
+from sum_transactions st 
+left join tbl_branch tb 
+on tb.id = st.branch_id
+where type = 'income' and sales_id is not null 
+group by 1
+),
+-- gross profit
+gross_profit as (
+select 
+tb.name, 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+left join tbl_branch tb 
+on tb.id = fs2.branch_id 
+group by 1
+),
+-- net_profit
+net_profit as (
+select 
+u.name,
+(gp.amount - o.amount) as amount
+from uss u
+left join outcome o
+on o.name = u.name
+left join gmv g 
+on g.name = u.name 
+left join revenue r 
+on r.name = u.name 
+left join gross_profit gp 
+on gp.name = u.name
+)
+SELECT 
+u.name, 
+o.amount as outcome, 
+g.amount as gmv, 
+r.amount as revenue, 
+gp.amount as gross_profit, 
+np.amount as net_profit
+from uss u
+left join outcome o
+on o.name = u.name
+left join gmv g 
+on g.name = u.name 
+left join revenue r 
+on r.name = u.name 
+left join gross_profit gp 
+on gp.name = u.name
+left join net_profit np 
+on np.name = u.name, parameters: None
+[2025-03-03T06:06:54.364+0000] {sql.py:384} INFO - Rows affected: 50
+[2025-03-03T06:06:54.697+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_dim_branch_finance_performance, execution_date=20250303T053913, start_date=20250303T060651, end_date=20250303T060654
+[2025-03-03T06:06:55.379+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T06:06:55.456+0000] {taskinstance.py:2651} INFO - 0 downstream tasks scheduled from follow-on schedule check

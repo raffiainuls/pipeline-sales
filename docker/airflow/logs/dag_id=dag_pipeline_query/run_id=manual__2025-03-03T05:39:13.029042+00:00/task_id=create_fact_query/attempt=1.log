@@ -1,0 +1,25 @@
+[2025-03-03T05:39:21.381+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_query manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T05:39:21.414+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_query manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T05:39:21.415+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T05:39:21.678+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_fact_query> on 2025-03-03 05:39:13.029042+00:00
+[2025-03-03T05:39:21.698+0000] {standard_task_runner.py:57} INFO - Started process 15883 to run task
+[2025-03-03T05:39:21.703+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_fact_query', 'manual__2025-03-03T05:39:13.029042+00:00', '--job-id', '37', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmptd6e4jww']
+[2025-03-03T05:39:21.709+0000] {standard_task_runner.py:85} INFO - Job 37: Subtask create_fact_query
+[2025-03-03T05:39:22.317+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T05:39:22.472+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_fact_query manual__2025-03-03T05:39:13.029042+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T05:39:24.469+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_fact_query' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T05:39:13.029042+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T05:39:13.029042+00:00'
+[2025-03-03T05:39:24.471+0000] {sql.py:262} INFO - Executing: CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true'
+[2025-03-03T05:39:24.712+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T05:39:25.620+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T05:39:25.727+0000] {sql.py:375} INFO - Running statement: CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true', parameters: None
+[2025-03-03T05:39:25.904+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_fact_query, execution_date=20250303T053913, start_date=20250303T053921, end_date=20250303T053925
+[2025-03-03T05:39:26.464+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T05:39:26.758+0000] {taskinstance.py:2651} INFO - 1 downstream tasks scheduled from follow-on schedule check

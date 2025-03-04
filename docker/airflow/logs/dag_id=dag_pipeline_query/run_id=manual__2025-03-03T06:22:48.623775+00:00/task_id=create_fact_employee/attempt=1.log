@@ -1,0 +1,65 @@
+[2025-03-03T06:22:53.332+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_employee manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:22:53.360+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_fact_employee manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:22:53.360+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T06:22:54.584+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_fact_employee> on 2025-03-03 06:22:48.623775+00:00
+[2025-03-03T06:22:54.595+0000] {standard_task_runner.py:57} INFO - Started process 21652 to run task
+[2025-03-03T06:22:54.603+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_fact_employee', 'manual__2025-03-03T06:22:48.623775+00:00', '--job-id', '77', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmpduwiku5v']
+[2025-03-03T06:22:54.608+0000] {standard_task_runner.py:85} INFO - Job 77: Subtask create_fact_employee
+[2025-03-03T06:22:56.393+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:22:56.682+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_fact_employee manual__2025-03-03T06:22:48.623775+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:22:57.481+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_fact_employee' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T06:22:48.623775+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T06:22:48.623775+00:00'
+[2025-03-03T06:22:57.482+0000] {sql.py:262} INFO - Executing: 
+            CREATE TABLE IF NOT EXISTS fact_employee AS
+            SELECT * FROM (CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true') AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE fact_employee;
+
+            INSERT INTO fact_employee
+            CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true';
+        
+[2025-03-03T06:22:57.534+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:22:57.732+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:22:57.915+0000] {sql.py:375} INFO - Running statement: 
+            CREATE TABLE IF NOT EXISTS fact_employee AS
+            SELECT * FROM (CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true') AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE fact_employee;
+
+            INSERT INTO fact_employee
+            CREATE TABLE IF NOT EXISTS fact_employee AS
+select 
+*
+from tbl_employee te 
+where te.active = 'true';
+        , parameters: None
+[2025-03-03T06:22:57.918+0000] {taskinstance.py:1824} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/providers/common/sql/operators/sql.py", line 274, in execute
+    **extra_kwargs,
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/providers/common/sql/hooks/sql.py", line 349, in run
+    self._run_command(cur, sql_statement, parameters)
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/providers/common/sql/hooks/sql.py", line 380, in _run_command
+    cur.execute(sql_statement)
+psycopg2.errors.SyntaxError: syntax error at or near "CREATE"
+LINE 3:             SELECT * FROM (CREATE TABLE IF NOT EXISTS fact_e...
+                                   ^
+
+[2025-03-03T06:22:57.984+0000] {taskinstance.py:1350} INFO - Marking task as UP_FOR_RETRY. dag_id=dag_pipeline_query, task_id=create_fact_employee, execution_date=20250303T062248, start_date=20250303T062253, end_date=20250303T062257
+[2025-03-03T06:22:58.721+0000] {standard_task_runner.py:109} ERROR - Failed to execute job 77 for task create_fact_employee (syntax error at or near "CREATE"
+LINE 3:             SELECT * FROM (CREATE TABLE IF NOT EXISTS fact_e...
+                                   ^
+; 21652)
+[2025-03-03T06:22:58.761+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 1
+[2025-03-03T06:22:58.961+0000] {taskinstance.py:2651} INFO - 0 downstream tasks scheduled from follow-on schedule check

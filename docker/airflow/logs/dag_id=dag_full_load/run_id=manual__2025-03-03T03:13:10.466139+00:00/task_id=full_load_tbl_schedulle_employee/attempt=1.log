@@ -1,0 +1,34 @@
+[2025-03-03T03:28:49.541+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_full_load.full_load_tbl_schedulle_employee manual__2025-03-03T03:13:10.466139+00:00 [queued]>
+[2025-03-03T03:28:49.559+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_full_load.full_load_tbl_schedulle_employee manual__2025-03-03T03:13:10.466139+00:00 [queued]>
+[2025-03-03T03:28:49.559+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T03:28:50.576+0000] {taskinstance.py:1327} INFO - Executing <Task(PythonOperator): full_load_tbl_schedulle_employee> on 2025-03-03 03:13:10.466139+00:00
+[2025-03-03T03:28:50.622+0000] {standard_task_runner.py:57} INFO - Started process 1940 to run task
+[2025-03-03T03:28:50.626+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_full_load', 'full_load_tbl_schedulle_employee', 'manual__2025-03-03T03:13:10.466139+00:00', '--job-id', '25', '--raw', '--subdir', 'DAGS_FOLDER/dag_full_load.py', '--cfg-path', '/tmp/tmpjqukjsp3']
+[2025-03-03T03:28:50.629+0000] {standard_task_runner.py:85} INFO - Job 25: Subtask full_load_tbl_schedulle_employee
+[2025-03-03T03:28:50.927+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T03:28:51.029+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_full_load.full_load_tbl_schedulle_employee manual__2025-03-03T03:13:10.466139+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T03:28:51.796+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_full_load' AIRFLOW_CTX_TASK_ID='full_load_tbl_schedulle_employee' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T03:13:10.466139+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T03:13:10.466139+00:00'
+[2025-03-03T03:28:51.804+0000] {logging_mixin.py:149} INFO - Processing Loading Configuration.....
+[2025-03-03T03:28:51.809+0000] {logging_mixin.py:149} INFO - Configuration Finished Load
+[2025-03-03T03:28:51.810+0000] {logging_mixin.py:149} INFO - usernamenya pakai apa nih: postgres
+[2025-03-03T03:28:51.830+0000] {taskinstance.py:1824} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/operators/python.py", line 181, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/operators/python.py", line 198, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/full_load_tbl_schedulle_employee.py", line 34, in full_load_tbl_schedulle_employee
+    full_load_postgres(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SCHEMA_NAME, TABLE_NAME, engine, create_table_query, df)
+  File "/opt/airflow/dags/full_load_postgres.py", line 36, in full_load_postgres
+    cur.execute(create_table_query)
+psycopg2.errors.SyntaxError: syntax error at or near ","
+LINE 3:     id INT PRIMARY ,
+                           ^
+
+[2025-03-03T03:28:51.886+0000] {taskinstance.py:1350} INFO - Marking task as UP_FOR_RETRY. dag_id=dag_full_load, task_id=full_load_tbl_schedulle_employee, execution_date=20250303T031310, start_date=20250303T032849, end_date=20250303T032851
+[2025-03-03T03:28:52.495+0000] {standard_task_runner.py:109} ERROR - Failed to execute job 25 for task full_load_tbl_schedulle_employee (syntax error at or near ","
+LINE 3:     id INT PRIMARY ,
+                           ^
+; 1940)
+[2025-03-03T03:28:52.526+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 1
+[2025-03-03T03:28:52.738+0000] {taskinstance.py:2651} INFO - 0 downstream tasks scheduled from follow-on schedule check

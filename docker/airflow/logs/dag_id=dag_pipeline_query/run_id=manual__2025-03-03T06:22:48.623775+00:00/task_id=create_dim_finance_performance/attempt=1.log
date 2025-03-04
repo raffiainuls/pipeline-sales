@@ -1,0 +1,214 @@
+[2025-03-03T06:32:27.313+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_finance_performance manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:32:27.352+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_finance_performance manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:32:27.354+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T06:32:27.798+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_dim_finance_performance> on 2025-03-03 06:22:48.623775+00:00
+[2025-03-03T06:32:28.010+0000] {standard_task_runner.py:57} INFO - Started process 22902 to run task
+[2025-03-03T06:32:28.016+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_dim_finance_performance', 'manual__2025-03-03T06:22:48.623775+00:00', '--job-id', '88', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmp02gy9dh5']
+[2025-03-03T06:32:28.021+0000] {standard_task_runner.py:85} INFO - Job 88: Subtask create_dim_finance_performance
+[2025-03-03T06:32:28.211+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:32:28.459+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_dim_finance_performance manual__2025-03-03T06:22:48.623775+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:32:29.854+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_dim_finance_performance' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T06:22:48.623775+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T06:22:48.623775+00:00'
+[2025-03-03T06:32:29.855+0000] {sql.py:262} INFO - Executing: 
+            CREATE TABLE IF NOT EXISTS dim_finance_performance AS
+            SELECT * FROM (-- dim_finance_performance
+-- unit_sold  
+with uss as (
+select 
+sum(quantity) unit_sold
+from fact_sales fs2 
+),
+-- gmv 
+gmv as (
+select 
+sum(quantity * price) amount
+from fact_sales fs2 
+),
+-- total outcome
+outcome as (
+select 
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+),
+-- revenue 
+revenue as (
+select
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+),
+-- gross profit
+gross_profit as (
+select 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+),
+-- net_profit
+net_profit as (
+select (select amount from gross_profit) - (select amount from outcome) as amount
+)
+SELECT 
+    (SELECT unit_sold FROM uss) AS unit_sold,
+    (SELECT amount FROM outcome) AS outcome,
+    (SELECT amount FROM gmv) AS gmv, 
+    (SELECT amount FROM revenue) AS revenue,
+    (SELECT amount FROM gross_profit) AS gross_profit,
+    (SELECT amount FROM net_profit) AS net_profit) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE dim_finance_performance;
+
+            INSERT INTO dim_finance_performance
+            -- dim_finance_performance
+-- unit_sold  
+with uss as (
+select 
+sum(quantity) unit_sold
+from fact_sales fs2 
+),
+-- gmv 
+gmv as (
+select 
+sum(quantity * price) amount
+from fact_sales fs2 
+),
+-- total outcome
+outcome as (
+select 
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+),
+-- revenue 
+revenue as (
+select
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+),
+-- gross profit
+gross_profit as (
+select 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+),
+-- net_profit
+net_profit as (
+select (select amount from gross_profit) - (select amount from outcome) as amount
+)
+SELECT 
+    (SELECT unit_sold FROM uss) AS unit_sold,
+    (SELECT amount FROM outcome) AS outcome,
+    (SELECT amount FROM gmv) AS gmv, 
+    (SELECT amount FROM revenue) AS revenue,
+    (SELECT amount FROM gross_profit) AS gross_profit,
+    (SELECT amount FROM net_profit) AS net_profit;
+        
+[2025-03-03T06:32:29.910+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:32:30.095+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:32:30.210+0000] {sql.py:375} INFO - Running statement: 
+            CREATE TABLE IF NOT EXISTS dim_finance_performance AS
+            SELECT * FROM (-- dim_finance_performance
+-- unit_sold  
+with uss as (
+select 
+sum(quantity) unit_sold
+from fact_sales fs2 
+),
+-- gmv 
+gmv as (
+select 
+sum(quantity * price) amount
+from fact_sales fs2 
+),
+-- total outcome
+outcome as (
+select 
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+),
+-- revenue 
+revenue as (
+select
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+),
+-- gross profit
+gross_profit as (
+select 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+),
+-- net_profit
+net_profit as (
+select (select amount from gross_profit) - (select amount from outcome) as amount
+)
+SELECT 
+    (SELECT unit_sold FROM uss) AS unit_sold,
+    (SELECT amount FROM outcome) AS outcome,
+    (SELECT amount FROM gmv) AS gmv, 
+    (SELECT amount FROM revenue) AS revenue,
+    (SELECT amount FROM gross_profit) AS gross_profit,
+    (SELECT amount FROM net_profit) AS net_profit) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE dim_finance_performance;
+
+            INSERT INTO dim_finance_performance
+            -- dim_finance_performance
+-- unit_sold  
+with uss as (
+select 
+sum(quantity) unit_sold
+from fact_sales fs2 
+),
+-- gmv 
+gmv as (
+select 
+sum(quantity * price) amount
+from fact_sales fs2 
+),
+-- total outcome
+outcome as (
+select 
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+),
+-- revenue 
+revenue as (
+select
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+),
+-- gross profit
+gross_profit as (
+select 
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+),
+-- net_profit
+net_profit as (
+select (select amount from gross_profit) - (select amount from outcome) as amount
+)
+SELECT 
+    (SELECT unit_sold FROM uss) AS unit_sold,
+    (SELECT amount FROM outcome) AS outcome,
+    (SELECT amount FROM gmv) AS gmv, 
+    (SELECT amount FROM revenue) AS revenue,
+    (SELECT amount FROM gross_profit) AS gross_profit,
+    (SELECT amount FROM net_profit) AS net_profit;
+        , parameters: None
+[2025-03-03T06:32:30.923+0000] {sql.py:384} INFO - Rows affected: 1
+[2025-03-03T06:32:31.304+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_dim_finance_performance, execution_date=20250303T062248, start_date=20250303T063227, end_date=20250303T063231
+[2025-03-03T06:32:31.445+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T06:32:31.623+0000] {taskinstance.py:2651} INFO - 1 downstream tasks scheduled from follow-on schedule check

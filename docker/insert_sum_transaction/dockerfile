@@ -1,0 +1,19 @@
+# Gunakan image resmi Python
+FROM python:3
+# Set work directory di dalam container
+WORKDIR /app
+
+ADD insert_load_sum_transactions.py /app/script.py
+
+# Install dependencies
+RUN pip install --no-cache-dir pandas psycopg2 sqlalchemy
+
+# Set environment variables agar PostgreSQL bisa diakses
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV POSTGRES_HOST=postgres
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DB=sales_project
+
+# Jalankan script
+CMD ["python", "script.py"]

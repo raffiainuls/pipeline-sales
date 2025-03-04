@@ -1,0 +1,6 @@
+apache-airflow-providers-cncf-kubernetes
+pandas
+faker
+openpyxl
+pyyaml
+

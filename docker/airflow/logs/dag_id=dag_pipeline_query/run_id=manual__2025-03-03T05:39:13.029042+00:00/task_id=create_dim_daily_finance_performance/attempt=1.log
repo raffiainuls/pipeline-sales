@@ -1,0 +1,164 @@
+[2025-03-03T06:06:32.106+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_daily_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T06:06:32.133+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_daily_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [queued]>
+[2025-03-03T06:06:32.135+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T06:06:32.354+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_dim_daily_finance_performance> on 2025-03-03 05:39:13.029042+00:00
+[2025-03-03T06:06:32.375+0000] {standard_task_runner.py:57} INFO - Started process 19596 to run task
+[2025-03-03T06:06:32.380+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_dim_daily_finance_performance', 'manual__2025-03-03T05:39:13.029042+00:00', '--job-id', '63', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmphvwizw32']
+[2025-03-03T06:06:32.382+0000] {standard_task_runner.py:85} INFO - Job 63: Subtask create_dim_daily_finance_performance
+[2025-03-03T06:06:32.465+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:06:32.647+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_dim_daily_finance_performance manual__2025-03-03T05:39:13.029042+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:06:33.534+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_dim_daily_finance_performance' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T05:39:13.029042+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T05:39:13.029042+00:00'
+[2025-03-03T06:06:33.594+0000] {sql.py:262} INFO - Executing: --dims_daily_finance_performance
+create table if not exists dim_daily_finance_performance  as
+ --  unit_sold 
+   with uss as (
+select 
+date(fs2.order_date) as date,
+sum(quantity) unit_sold
+from fact_sales fs2 
+group by 1
+),
+-- gmv 
+gmv as (
+select 
+date(fs2.order_date) as date,
+sum(quantity * price) amount
+from fact_sales fs2 
+group by 1
+),
+-- total outcome
+outcome as (
+select 
+date(st.date) as date,
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+group by 1
+),
+-- revenue 
+revenue as (
+select
+date(st.date) as date,
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+group by 1
+),
+-- gross profit
+gross_profit as (
+select 
+date(fs2.order_date) as date,
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+group by 1
+),
+-- net_profit
+net_profit as (
+select 
+gp.date,
+(gp.amount - o.amount) as amount
+from gross_profit gp
+left join outcome o
+on  o.date = gp.date
+)
+select 
+u.date,
+u.unit_sold,
+g.amount as gmv,
+o.amount as outcome,
+r.amount as revenue,
+gp.amount as gross_profit,
+np.amount as nett_profit
+from uss u
+left join gmv g
+on g.date = u.date
+left join outcome o
+on o.date = u.date
+left join revenue r
+on r.date = u.date
+left join gross_profit gp 
+on gp.date = u.date 
+left join net_profit np 
+on np.date = u.date
+[2025-03-03T06:06:33.641+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:06:33.847+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:06:33.896+0000] {sql.py:375} INFO - Running statement: --dims_daily_finance_performance
+create table if not exists dim_daily_finance_performance  as
+ --  unit_sold 
+   with uss as (
+select 
+date(fs2.order_date) as date,
+sum(quantity) unit_sold
+from fact_sales fs2 
+group by 1
+),
+-- gmv 
+gmv as (
+select 
+date(fs2.order_date) as date,
+sum(quantity * price) amount
+from fact_sales fs2 
+group by 1
+),
+-- total outcome
+outcome as (
+select 
+date(st.date) as date,
+sum(amount) amount
+from sum_transactions st 
+where type = 'outcome'
+group by 1
+),
+-- revenue 
+revenue as (
+select
+date(st.date) as date,
+sum(amount) amount
+from sum_transactions st 
+where type = 'income' and sales_id is not null 
+group by 1
+),
+-- gross profit
+gross_profit as (
+select 
+date(fs2.order_date) as date,
+sum((fs2.price * tp.profit  / 100) * fs2.quantity)  as amount
+from fact_sales fs2 
+left join tbl_product tp 
+on tp.id  = fs2.product_id 
+group by 1
+),
+-- net_profit
+net_profit as (
+select 
+gp.date,
+(gp.amount - o.amount) as amount
+from gross_profit gp
+left join outcome o
+on  o.date = gp.date
+)
+select 
+u.date,
+u.unit_sold,
+g.amount as gmv,
+o.amount as outcome,
+r.amount as revenue,
+gp.amount as gross_profit,
+np.amount as nett_profit
+from uss u
+left join gmv g
+on g.date = u.date
+left join outcome o
+on o.date = u.date
+left join revenue r
+on r.date = u.date
+left join gross_profit gp 
+on gp.date = u.date 
+left join net_profit np 
+on np.date = u.date, parameters: None
+[2025-03-03T06:06:35.801+0000] {sql.py:384} INFO - Rows affected: 353
+[2025-03-03T06:06:36.943+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_dim_daily_finance_performance, execution_date=20250303T053913, start_date=20250303T060632, end_date=20250303T060636
+[2025-03-03T06:06:37.132+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T06:06:37.252+0000] {taskinstance.py:2651} INFO - 0 downstream tasks scheduled from follow-on schedule check

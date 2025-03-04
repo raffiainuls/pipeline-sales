@@ -1,0 +1,142 @@
+[2025-03-03T06:32:20.911+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_monthly_customers_retention manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:32:20.959+0000] {taskinstance.py:1103} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_pipeline_query.create_dim_monthly_customers_retention manual__2025-03-03T06:22:48.623775+00:00 [queued]>
+[2025-03-03T06:32:20.999+0000] {taskinstance.py:1308} INFO - Starting attempt 1 of 2
+[2025-03-03T06:32:21.226+0000] {taskinstance.py:1327} INFO - Executing <Task(PostgresOperator): create_dim_monthly_customers_retention> on 2025-03-03 06:22:48.623775+00:00
+[2025-03-03T06:32:21.268+0000] {standard_task_runner.py:57} INFO - Started process 22898 to run task
+[2025-03-03T06:32:21.275+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'dag_pipeline_query', 'create_dim_monthly_customers_retention', 'manual__2025-03-03T06:22:48.623775+00:00', '--job-id', '87', '--raw', '--subdir', 'DAGS_FOLDER/dag_pipeline_query.py', '--cfg-path', '/tmp/tmp9n45msmy']
+[2025-03-03T06:32:21.277+0000] {standard_task_runner.py:85} INFO - Job 87: Subtask create_dim_monthly_customers_retention
+[2025-03-03T06:32:21.436+0000] {logging_mixin.py:149} WARNING - /home/***/.local/lib/python3.7/site-packages/***/settings.py:195 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2025-03-03T06:32:21.564+0000] {task_command.py:410} INFO - Running <TaskInstance: dag_pipeline_query.create_dim_monthly_customers_retention manual__2025-03-03T06:22:48.623775+00:00 [running]> on host 9b8c8285a7ac
+[2025-03-03T06:32:22.372+0000] {taskinstance.py:1547} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Raffi' AIRFLOW_CTX_DAG_ID='dag_pipeline_query' AIRFLOW_CTX_TASK_ID='create_dim_monthly_customers_retention' AIRFLOW_CTX_EXECUTION_DATE='2025-03-03T06:22:48.623775+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-03-03T06:22:48.623775+00:00'
+[2025-03-03T06:32:22.373+0000] {sql.py:262} INFO - Executing: 
+            CREATE TABLE IF NOT EXISTS dim_monthly_customers_retention AS
+            SELECT * FROM (-- monthly custome retention 
+WITH monthly_customers AS (
+    SELECT 
+        customer_id,
+        DATE_TRUNC('month', order_date) AS bulan
+    FROM fact_sales
+    GROUP BY customer_id, bulan
+),
+retention AS (
+    SELECT 
+        mc1.bulan,
+        COUNT(DISTINCT mc1.customer_id) AS total_customers,
+        COUNT(DISTINCT mc2.customer_id) AS retained_customers
+    FROM monthly_customers mc1
+    LEFT JOIN monthly_customers mc2
+        ON mc1.customer_id = mc2.customer_id  
+        AND mc2.bulan = mc1.bulan + INTERVAL '1 month'
+    GROUP BY mc1.bulan
+),
+retention_rate AS (
+    SELECT 
+        bulan,
+        total_customers,
+        retained_customers, 
+        (retained_customers * 100.0 / NULLIF(total_customers, 0)) AS retention_rate_percent
+    FROM retention
+)
+SELECT * FROM retention_rate) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE dim_monthly_customers_retention;
+
+            INSERT INTO dim_monthly_customers_retention
+            -- monthly custome retention 
+WITH monthly_customers AS (
+    SELECT 
+        customer_id,
+        DATE_TRUNC('month', order_date) AS bulan
+    FROM fact_sales
+    GROUP BY customer_id, bulan
+),
+retention AS (
+    SELECT 
+        mc1.bulan,
+        COUNT(DISTINCT mc1.customer_id) AS total_customers,
+        COUNT(DISTINCT mc2.customer_id) AS retained_customers
+    FROM monthly_customers mc1
+    LEFT JOIN monthly_customers mc2
+        ON mc1.customer_id = mc2.customer_id  
+        AND mc2.bulan = mc1.bulan + INTERVAL '1 month'
+    GROUP BY mc1.bulan
+),
+retention_rate AS (
+    SELECT 
+        bulan,
+        total_customers,
+        retained_customers, 
+        (retained_customers * 100.0 / NULLIF(total_customers, 0)) AS retention_rate_percent
+    FROM retention
+)
+SELECT * FROM retention_rate;
+        
+[2025-03-03T06:32:22.416+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:32:22.568+0000] {base.py:73} INFO - Using connection ID 'sales_project_conn' for task execution.
+[2025-03-03T06:32:22.600+0000] {sql.py:375} INFO - Running statement: 
+            CREATE TABLE IF NOT EXISTS dim_monthly_customers_retention AS
+            SELECT * FROM (-- monthly custome retention 
+WITH monthly_customers AS (
+    SELECT 
+        customer_id,
+        DATE_TRUNC('month', order_date) AS bulan
+    FROM fact_sales
+    GROUP BY customer_id, bulan
+),
+retention AS (
+    SELECT 
+        mc1.bulan,
+        COUNT(DISTINCT mc1.customer_id) AS total_customers,
+        COUNT(DISTINCT mc2.customer_id) AS retained_customers
+    FROM monthly_customers mc1
+    LEFT JOIN monthly_customers mc2
+        ON mc1.customer_id = mc2.customer_id  
+        AND mc2.bulan = mc1.bulan + INTERVAL '1 month'
+    GROUP BY mc1.bulan
+),
+retention_rate AS (
+    SELECT 
+        bulan,
+        total_customers,
+        retained_customers, 
+        (retained_customers * 100.0 / NULLIF(total_customers, 0)) AS retention_rate_percent
+    FROM retention
+)
+SELECT * FROM retention_rate) AS subquery WHERE FALSE;
+
+            TRUNCATE TABLE dim_monthly_customers_retention;
+
+            INSERT INTO dim_monthly_customers_retention
+            -- monthly custome retention 
+WITH monthly_customers AS (
+    SELECT 
+        customer_id,
+        DATE_TRUNC('month', order_date) AS bulan
+    FROM fact_sales
+    GROUP BY customer_id, bulan
+),
+retention AS (
+    SELECT 
+        mc1.bulan,
+        COUNT(DISTINCT mc1.customer_id) AS total_customers,
+        COUNT(DISTINCT mc2.customer_id) AS retained_customers
+    FROM monthly_customers mc1
+    LEFT JOIN monthly_customers mc2
+        ON mc1.customer_id = mc2.customer_id  
+        AND mc2.bulan = mc1.bulan + INTERVAL '1 month'
+    GROUP BY mc1.bulan
+),
+retention_rate AS (
+    SELECT 
+        bulan,
+        total_customers,
+        retained_customers, 
+        (retained_customers * 100.0 / NULLIF(total_customers, 0)) AS retention_rate_percent
+    FROM retention
+)
+SELECT * FROM retention_rate;
+        , parameters: None
+[2025-03-03T06:32:22.836+0000] {sql.py:384} INFO - Rows affected: 12
+[2025-03-03T06:32:23.445+0000] {taskinstance.py:1350} INFO - Marking task as SUCCESS. dag_id=dag_pipeline_query, task_id=create_dim_monthly_customers_retention, execution_date=20250303T062248, start_date=20250303T063220, end_date=20250303T063223
+[2025-03-03T06:32:23.974+0000] {local_task_job_runner.py:225} INFO - Task exited with return code 0
+[2025-03-03T06:32:24.055+0000] {taskinstance.py:2651} INFO - 1 downstream tasks scheduled from follow-on schedule check
